@@ -1,0 +1,124 @@
+Ansible Configuration Management on AWS EC2
+
+📌 Project Overview
+
+This project demonstrates how to configure and manage an Ubuntu EC2 instance using Ansible on AWS. It covers setting up an Ansible master and managed node, configuring passwordless SSH authentication, creating an inventory file, executing ad-hoc commands, and installing and running the Nginx web server remotely.
+
+🎯 Project Objectives
+
+Create an Ansible master and managed node on AWS EC2.
+
+Install and configure Ansible on Ubuntu.
+
+Establish SSH connectivity between the master and node.
+
+Configure an Ansible inventory.
+
+Test connectivity using the Ansible ping module.
+
+Execute Linux commands remotely using Ansible ad-hoc commands.
+
+Install and start Nginx using Ansible.
+
+Host and access the default Nginx welcome page through a public IP address.
+
+🏗️ Architecture
+
+                 Developer / User
+                        |
+                        | HTTP (Port 80)
+                        v
+               +-------------------+
+               |   Web Browser     |
+               +-------------------+
+                        |
+                        v
+        +--------------------------------+
+        |          AWS Cloud             |
+        |       Mumbai Region            |
+        |         ap-south-1              |
+        |                                |
+        |  +--------------------------+  |
+        |  |   ansible-master         |  |
+        |  |   Ubuntu EC2              |  |
+        |  |                           |  |
+        |  |   Ansible                 |  |
+        |  |   SSH Private Key         |  |
+        |  |   Inventory File          |  |
+        |  +-------------+-------------+  |
+        |                |                |
+        |                | SSH (Port 22)  |
+        |                |                |
+        |                v                |
+        |  +--------------------------+  |
+        |  |   ansible-node           |  |
+        |  |   Ubuntu EC2              |  |
+        |  |                           |  |
+        |  |   SSH Public Key          |  |
+        |  |   Nginx Web Server        |  |
+        |  |   Port 80                 |  |
+        |  +--------------------------+  |
+        |                                |
+        |  VPC + Public Subnet            |
+        |  Internet Gateway               |
+        +--------------------------------+
+
+Architecture Components
+
+Component
+
+Purpose
+
+AWS EC2
+
+Provides virtual machines for the project.
+
+Ansible Master
+
+Executes Ansible commands and manages the node.
+
+Ansible Node
+
+Managed server where tasks are executed.
+
+SSH
+
+Provides secure communication between the master and node.
+
+Inventory
+
+Stores the managed node's IP address and connection details.
+
+Nginx
+
+Web server installed on the managed node.
+
+VPC
+
+Provides an isolated AWS network for the infrastructure.
+
+Internet Gateway
+
+Enables internet connectivity for resources in a properly configured public subnet.
+
+Security Groups
+
+Control inbound and outbound instance traffic.
+
+🛠️ Technologies Used
+
+Cloud Platform: Amazon Web Services (AWS)
+
+Compute: Amazon EC2
+
+Operating System: Ubuntu Linux
+
+Configuration Management: Ansible
+
+Remote Access: SSH
+
+Web Server: Nginx
+
+Networking: VPC, Subnets, Internet Gateway, Route Tables, Security Groups
+
+Web Protocol: HTTP
