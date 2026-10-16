@@ -47,6 +47,7 @@ Repository format: This repository is intentionally documented in a single READM
 - Understand error handling and Ansible Vault.
 - Deploy and verify an Nginx webpage.
 🏗️ Architecture
+
                     👤 Administrator
                            |
                            v
@@ -73,6 +74,7 @@ Repository format: This repository is intentionally documented in a single READM
                            |
                            v
                      Web Browser
+  
 How it works: The master reads the inventory and playbook, connects to the node over SSH, and executes tasks remotely. Nginx serves the deployed webpage.
 🧰 Technology Stack
 Technology	Purpose
