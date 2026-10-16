@@ -34,11 +34,13 @@ A hands-on DevOps project demonstrating server automation with Ansible on AWS EC
 - Conclusion
  
 📖 Overview
+
 This project uses Ansible to automate configuration of an Ubuntu web server hosted on Amazon EC2.
 Ansible runs from a controller machine named ansible-master and connects to a managed machine named ansible-node over SSH. It can install Nginx, deploy a custom webpage, manage services, and verify the HTTP response.
 Repository format: This repository is intentionally documented in a single README.md file. Commands and code samples are shown below; save the relevant code blocks into files on the EC2 controller when you want to execute them.
 
 🎯 Project Goals
+
 - Provision two Ubuntu EC2 instances for the lab.
 - Install Ansible on the controller node.
 - Configure SSH authentication to the managed node.
@@ -77,9 +79,12 @@ Repository format: This repository is intentionally documented in a single READM
                            v
                      Web Browser
   
-How it works: The master reads the inventory and playbook, connects to the node over SSH, and executes tasks remotely. Nginx serves the deployed webpage.
+How it works: 
+
+The master reads the inventory and playbook, connects to the node over SSH, and executes tasks remotely. Nginx serves the deployed webpage.
 
 🧰 Technology Stack
+
 Technology	Purpose
 AWS EC2	Host the controller and managed server
 Ubuntu Linux	Operating system
@@ -92,6 +97,7 @@ Git and GitHub	Version control and project documentation
 
 
 ✅ Prerequisites
+
 - An AWS account.
 - Two Ubuntu EC2 instances.
 - SSH access to the master.
@@ -100,7 +106,9 @@ Git and GitHub	Version control and project documentation
 - Basic Linux and YAML knowledge.
 
 
-🔐 Security: Keep SSH port 22 restricted to trusted sources. Allow HTTP port 80 publicly only when you want to demonstrate the website. Never commit private keys, .pem files, AWS credentials, or real passwords.
+🔐 Security: 
+
+Keep SSH port 22 restricted to trusted sources. Allow HTTP port 80 publicly only when you want to demonstrate the website. Never commit private keys, .pem files, AWS credentials, or real passwords.
 
 
 Step 1 — Create EC2 Instances:
@@ -119,15 +127,15 @@ Choose an instance type appropriate for your account and current AWS pricing. Fr
 Ensure the master can reach the node on TCP port 22. The node also needs outbound access to Ubuntu package repositories, or another configured package source, to install packages.
 
 
-Step 2 — Connect to the Master
+Step 2 — Connect to the Master:
+
 From your local terminal, connect using the master's current public IPv4 address:
 ssh -i /path/to/your-key.pem ubuntu@MASTER_PUBLIC_IP
 Replace the placeholders with your local private-key path and the master's actual public IP.
 Do not share or upload the private key.
 
 
-Step 3 — Install Ansible
-On the master:
+Step 3 — Install Ansible On the master:
 
 sudo apt update
 sudo apt install ansible -y
@@ -139,7 +147,8 @@ mkdir -p ~/ansible-project
 cd ~/ansible-project
 
 
-Step 4 — Configure SSH Authentication
+Step 4 — Configure SSH Authentication:
+
 Generate an SSH key on the master if you do not already have one:
 
 ssh-keygen -t ed25519 -C "ansible-master"
@@ -162,7 +171,7 @@ After verifying access, return to the master:
 exit
 
 
-Step 5 — Configure the Ansible Inventory
+Step 5 — Configure the Ansible Inventory:
 
 The inventory tells Ansible which machines to manage and how to connect to them.
 Open the inventory file:
