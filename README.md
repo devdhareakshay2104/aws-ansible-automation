@@ -175,3 +175,57 @@ Tested the SSH connection from the master:
 ssh -i ~/.ssh/id_ed25519 ubuntu@NODE_PRIVATE_IP
 
 Replaced NODE_PRIVATE_IP with the managed node's private IP address.
+
+Step 5: Configure the Ansible Inventory
+
+Created the inventory directory and file:
+
+sudo mkdir -p /etc/ansible
+sudo nano /etc/ansible/hosts
+
+Added the managed node configuration:
+
+[web]
+NODE_PRIVATE_IP ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/.ssh/id_ed25519
+
+Replaced NODE_PRIVATE_IP with the current private IP address of ansible-node.
+
+Verified the inventory:
+
+ansible-inventory --list
+
+Step 6: Test Ansible Connectivity
+
+Executed the Ansible ping module:
+
+ansible web -m ping
+
+Expected result:
+
+SUCCESS
+"changed": false,
+"ping": "pong"
+
+This confirmed that the master could communicate with the managed node through Ansible.
+
+Step 7: Execute Ad-Hoc Commands
+
+Executed Linux commands remotely on the managed node.
+
+Check system uptime
+
+ansible web -m command -a "uptime"
+
+Display the current date
+
+ansible web -m command -a "date"
+
+Check memory usage
+
+ansible web -m command -a "free -h"
+
+Check disk usage
+
+ansible web -m command -a "df -h"
+
+These commands demonstrated how Ansible can execute administrative tasks remotely without requiring manual login to the managed node.
