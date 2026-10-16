@@ -97,7 +97,9 @@ Git and GitHub	Version control and project documentation
 - Basic Linux and YAML knowledge.
 🔐 Security: Keep SSH port 22 restricted to trusted sources. Allow HTTP port 80 publicly only when you want to demonstrate the website. Never commit private keys, .pem files, AWS credentials, or real passwords.
 
-Step 1 — Create EC2 Instances
+
+Step 1 — Create EC2 Instances:
+
 In the AWS Console, open EC2 → Instances → Launch instances.
 Create these two instances:
 Setting	Ansible Master	Ansible Node
@@ -110,51 +112,88 @@ SSH access	Your IP address	Preferably allow SSH from the master's security group
 
 Choose an instance type appropriate for your account and current AWS pricing. Free-tier eligibility depends on account status and the instance type.
 Ensure the master can reach the node on TCP port 22. The node also needs outbound access to Ubuntu package repositories, or another configured package source, to install packages.
+
+
 Step 2 — Connect to the Master
 From your local terminal, connect using the master's current public IPv4 address:
 ssh -i /path/to/your-key.pem ubuntu@MASTER_PUBLIC_IP
 Replace the placeholders with your local private-key path and the master's actual public IP.
 Do not share or upload the private key.
+
+
 Step 3 — Install Ansible
 On the master:
+
 sudo apt update
 sudo apt install ansible -y
 ansible --version
+
 Create a workspace:
+
 mkdir -p ~/ansible-project
 cd ~/ansible-project
+
+
 Step 4 — Configure SSH Authentication
 Generate an SSH key on the master if you do not already have one:
+
 ssh-keygen -t ed25519 -C "ansible-master"
+
 Accept the default location if appropriate. Do not overwrite an existing key unless you intend to replace it.
 Display the public key:
+
 cat ~/.ssh/id_ed25519.pub
+
 Add that public key to the managed node's ~/.ssh/authorized_keys using a secure method. If password-based SSH is enabled on the node, you can use:
+
 ssh-copy-id -i ~/.ssh/id_ed25519.pub ubuntu@NODE_PRIVATE_IP
+
 Test the connection:
+
 ssh -i ~/.ssh/id_ed25519 ubuntu@NODE_PRIVATE_IP
+
 After verifying access, return to the master:
+
 exit
+
+
 Step 5 — Configure the Ansible Inventory
+
 The inventory tells Ansible which machines to manage and how to connect to them.
 Open the inventory file:
+
 sudo nano /etc/ansible/hosts
 Add this entry, replacing NODE_PRIVATE_IP with the current private IP of your node:
+
 [web]
 NODE_PRIVATE_IP ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/.ssh/id_ed25519
+
 Save and exit the editor.
-Step 6 — Test Connectivity and Run Ad-Hoc Commands
+
+
+Step 6 — Test Connectivity and Run Ad-Hoc Commands:
+
 Test the Ansible connection:
+
 ansible web -m ping
+
 Expected result:
+
 SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
+
 Try a few ad-hoc commands:
+
 ansible web -m command -a "uptime"
+
 ansible web -m command -a "date"
+
 ansible web -m command -a "free -h"
+
 ansible web -m command -a "df -h"
+
 Check Nginx status with elevated privileges:
+
 ansible web -b -m command -a "systemctl is-active nginx"
