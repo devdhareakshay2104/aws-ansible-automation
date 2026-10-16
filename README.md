@@ -1,231 +1,171 @@
-Ansible Configuration Management on AWS EC2
+AWS Ansible Automation — EC2 Web Server Deployment
 
-📌 Project Overview
+1. Project Overview
 
-This project demonstrates how to configure and manage an Ubuntu EC2 instance using Ansible on AWS. It covers setting up an Ansible master and managed node, configuring passwordless SSH authentication, creating an inventory file, executing ad-hoc commands, and installing and running the Nginx web server remotely.
+This project demonstrates how to use Ansible to automate the configuration of an Ubuntu web server running on AWS EC2.
 
-🎯 Project Objectives
+Ansible runs on a controller instance called ansible-master and connects to a managed instance called ansible-node through SSH. It installs Nginx, deploys a custom HTML webpage, manages services, and verifies the deployment.
 
-Create an Ansible master and managed node on AWS EC2.
+All setup instructions and code examples are documented in this README.
 
-Install and configure Ansible on Ubuntu.
+2. Project Objectives
 
-Establish SSH connectivity between the master and node.
+Create Ubuntu EC2 instances for Ansible automation.
 
-Configure an Ansible inventory.
+Install and configure Ansible on the controller.
 
-Test connectivity using the Ansible ping module.
+Configure SSH authentication between the controller and managed node.
 
-Execute Linux commands remotely using Ansible ad-hoc commands.
+Manage the target server through an Ansible inventory.
 
-Install and start Nginx using Ansible.
+Use playbooks, variables, loops, conditions, facts, handlers, templates, and roles.
 
-Host and access the default Nginx welcome page through a public IP address.
+Automate package, file, user, group, service, and cron management.
 
-🏗️ Architecture
+Learn error handling and Ansible Vault.
 
-                 Developer / User
-                        |
-                        | HTTP (Port 80)
-                        v
-               +-------------------+
-               |   Web Browser     |
-               +-------------------+
-                        |
-                        v
-        +--------------------------------+
-        |          AWS Cloud             |
-        |       Mumbai Region            |
-        |         ap-south-1              |
-        |                                |
-        |  +--------------------------+  |
-        |  |   ansible-master         |  |
-        |  |   Ubuntu EC2              |  |
-        |  |                           |  |
-        |  |   Ansible                 |  |
-        |  |   SSH Private Key         |  |
-        |  |   Inventory File          |  |
-        |  +-------------+-------------+  |
-        |                |                |
-        |                | SSH (Port 22)  |
-        |                |                |
-        |                v                |
-        |  +--------------------------+  |
-        |  |   ansible-node           |  |
-        |  |   Ubuntu EC2              |  |
-        |  |                           |  |
-        |  |   SSH Public Key          |  |
-        |  |   Nginx Web Server        |  |
-        |  |   Port 80                 |  |
-        |  +--------------------------+  |
-        |                                |
-        |  VPC + Public Subnet            |
-        |  Internet Gateway               |
-        +--------------------------------+
+Deploy and verify an Nginx webpage automatically.
 
-Architecture Components
+3. Technologies Used
 
-Component
+Amazon Web Services (AWS)
 
-Purpose
+Amazon EC2
 
-AWS EC2
+Ubuntu Linux
 
-Provides virtual machines for the project.
-
-Ansible Master
-
-Executes Ansible commands and manages the node.
-
-Ansible Node
-
-Managed server where tasks are executed.
+Ansible
 
 SSH
 
-Provides secure communication between the master and node.
+YAML
 
-Inventory
-
-Stores the managed node's IP address and connection details.
+Jinja2 templates
 
 Nginx
 
-Web server installed on the managed node.
+Git and GitHub
 
-VPC
+4. Architecture
 
-Provides an isolated AWS network for the infrastructure.
+                 Administrator
+                       |
+                       v
+                Ansible Master
+                 Ubuntu EC2
+                       |
+                 SSH / TCP 22
+                       |
+                       v
+                 Ansible Node
+                  Ubuntu EC2
+                       |
+                       v
+                     Nginx
+                       |
+                       v
+               Custom HTML Website
+                  HTTP / TCP 80
 
-Internet Gateway
+The master executes Ansible commands and playbooks. The managed node receives tasks over SSH and runs them remotely.
 
-Enables internet connectivity for resources in a properly configured public subnet.
+5. Prerequisites
 
-Security Groups
+An AWS account.
 
-Control inbound and outbound instance traffic.
+Two Ubuntu EC2 instances.
 
-🛠️ Technologies Used
+SSH access to the controller.
 
-Cloud Platform: Amazon Web Services (AWS)
+An SSH key pair for initial access.
 
-Compute: Amazon EC2
+Ansible installed on the controller.
 
-Operating System: Ubuntu Linux
+Basic knowledge of Linux commands and YAML.
 
-Configuration Management: Ansible
+Security: Keep SSH port 22 restricted to your own IP address where possible. Open HTTP port 80 to the public only when you want the demo website to be publicly accessible. Never upload private keys or AWS credentials.
 
-Remote Access: SSH
+6. Create EC2 Instances
 
-Web Server: Nginx
+Open AWS Console → EC2 → Instances → Launch instances.
 
-Networking: VPC, Subnets, Internet Gateway, Route Tables, Security Groups
+Create these instances:
 
-Web Protocol: HTTP
+Setting
 
-⚙️ Implementation Steps
+Ansible Master
 
-Step 1: Create EC2 Instances
+Ansible Node
 
-Created two Ubuntu EC2 instances in the AWS Mumbai region:
+Name
 
-ansible-master — Ansible controller.
+ansible-master
 
-ansible-node — Managed server.
+ansible-node
 
-Both instances were configured with suitable networking and security-group rules.
+Operating system
 
-Step 2: Connect to the Master
+Ubuntu Server
 
-Connected to the ansible-master instance using EC2 Instance Connect.
+Ubuntu Server
 
-Verified the username and hostname:
+Instance type
 
-whoami
-hostname
+Suitable free-tier-eligible type, if available
 
-Step 3: Install Ansible
+Suitable free-tier-eligible type, if available
 
-Updated the package list:
+Network
+
+Same VPC
+
+Same VPC
+
+SSH key
+
+Your selected key pair
+
+Your selected key pair
+
+SSH access
+
+Your IP address
+
+Preferably master access for private SSH
+
+Use a suitable instance type based on your account's current free-tier eligibility and pricing.
+
+Both instances should be in a network where the master can reach the node over SSH. For this lab, the easiest configuration is to place them in the same VPC and allow SSH from the master's security group to the node.
+
+If you want to install packages from Ubuntu repositories, the node needs outbound internet connectivity or another configured package source.
+
+7. Connect to the Ansible Master
+
+From your terminal, connect using the public IPv4 address of the master.
+
+ssh -i /path/to/your-key.pem ubuntu@MASTER_PUBLIC_IP
+
+Replace /path/to/your-key.pem and MASTER_PUBLIC_IP with your actual local key path and master public IP.
+
+Do not paste the contents of your private key into this README or GitHub.
+
+8. Install Ansible on the Master
+
+Update the package cache:
 
 sudo apt update
 
-Installed Ansible:
+Install Ansible:
 
 sudo apt install ansible -y
 
-Verified the installation:
+Verify the installation:
 
 ansible --version
 
-Step 4: Configure SSH Authentication
+Create the project directory:
 
-Generated an Ed25519 SSH key pair on the master:
+mkdir -p ~/ansible-project
+cd ~/ansible-project
 
-ssh-keygen -t ed25519
-
-Displayed the public key:
-
-cat ~/.ssh/id_ed25519.pub
-
-Added the master's public key to the managed node's ~/.ssh/authorized_keys file and configured the appropriate SSH permissions.
-
-Tested the SSH connection from the master:
-
-ssh -i ~/.ssh/id_ed25519 ubuntu@NODE_PRIVATE_IP
-
-Replaced NODE_PRIVATE_IP with the managed node's private IP address.
-
-Step 5: Configure the Ansible Inventory
-
-Created the inventory directory and file:
-
-sudo mkdir -p /etc/ansible
-sudo nano /etc/ansible/hosts
-
-Added the managed node configuration:
-
-[web]
-NODE_PRIVATE_IP ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/.ssh/id_ed25519
-
-Replaced NODE_PRIVATE_IP with the current private IP address of ansible-node.
-
-Verified the inventory:
-
-ansible-inventory --list
-
-Step 6: Test Ansible Connectivity
-
-Executed the Ansible ping module:
-
-ansible web -m ping
-
-Expected result:
-
-SUCCESS
-"changed": false,
-"ping": "pong"
-
-This confirmed that the master could communicate with the managed node through Ansible.
-
-Step 7: Execute Ad-Hoc Commands
-
-Executed Linux commands remotely on the managed node.
-
-Check system uptime
-
-ansible web -m command -a "uptime"
-
-Display the current date
-
-ansible web -m command -a "date"
-
-Check memory usage
-
-ansible web -m command -a "free -h"
-
-Check disk usage
-
-ansible web -m command -a "df -h"
-
-These commands demonstrated how Ansible can execute administrative tasks remotely without requiring manual login to the managed node.
+ed how Ansible can execute administrative tasks remotely without requiring manual login to the managed node.
