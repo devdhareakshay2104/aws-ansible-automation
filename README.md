@@ -32,6 +32,7 @@ A hands-on DevOps project demonstrating server automation with Ansible on AWS EC
 - Security and Cost Notes
 - Skills Demonstrated
 - Conclusion
+ 
 📖 Overview
 This project uses Ansible to automate configuration of an Ubuntu web server hosted on Amazon EC2.
 Ansible runs from a controller machine named ansible-master and connects to a managed machine named ansible-node over SSH. It can install Nginx, deploy a custom webpage, manage services, and verify the HTTP response.
@@ -46,6 +47,7 @@ Repository format: This repository is intentionally documented in a single READM
 - Automate packages, files, users, groups, services, and cron jobs.
 - Understand error handling and Ansible Vault.
 - Deploy and verify an Nginx webpage.
+
 🏗️ Architecture
 
                     👤 Administrator
@@ -76,6 +78,7 @@ Repository format: This repository is intentionally documented in a single READM
                      Web Browser
   
 How it works: The master reads the inventory and playbook, connects to the node over SSH, and executes tasks remotely. Nginx serves the deployed webpage.
+
 🧰 Technology Stack
 Technology	Purpose
 AWS EC2	Host the controller and managed server
@@ -95,6 +98,8 @@ Git and GitHub	Version control and project documentation
 - An SSH key pair for initial EC2 access.
 - Ansible installed on the master.
 - Basic Linux and YAML knowledge.
+
+
 🔐 Security: Keep SSH port 22 restricted to trusted sources. Allow HTTP port 80 publicly only when you want to demonstrate the website. Never commit private keys, .pem files, AWS credentials, or real passwords.
 
 
