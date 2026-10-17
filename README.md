@@ -210,4 +210,42 @@ ansible web -m command -a "df -h"
 
 Check Nginx status with elevated privileges:
 
+
+Step 7 — Install Nginx with a Playbook:
+
+
+Create a playbook on the master:
+
+nano nginx-playbook.yml
+
+Add:
+
+---
+- name: Install and configure Nginx
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Ensure Nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      
+Run the playbook:
+
+ansible-playbook nginx-playbook.yml
+
+Verify the service and local HTTP response:
+
 ansible web -b -m command -a "systemctl is-active nginx"
+ansible web -m command -a "curl -I http://127.0.0.1"
+ansible web -b -m command -a "systemctl is-active nginx"
+
+
