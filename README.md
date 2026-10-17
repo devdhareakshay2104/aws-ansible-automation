@@ -1,165 +1,253 @@
-<div align="center">
+# AWS Ansible Automation — EC2 Web Server Deployment
 
-🚀 AWS Ansible Automation
-Automate Ubuntu EC2 Configuration & Nginx Web Server Deployment
-<p>
-  <img src="https://img.shields.io/badge/AWS-EC2-orange?logo=amazonaws&logoColor=white" alt="AWS EC2">
-  <img src="https://img.shields.io/badge/Automation-Ansible-red?logo=ansible&logoColor=white" alt="Ansible">
-  <img src="https://img.shields.io/badge/OS-Ubuntu-E95420?logo=ubuntu&logoColor=white" alt="Ubuntu">
-  <img src="https://img.shields.io/badge/Web_Server-Nginx-009639?logo=nginx&logoColor=white" alt="Nginx">
-  <img src="https://img.shields.io/badge/Documentation-README.md-blue?logo=markdown&logoColor=white" alt="README">
-</p>
+## 1. Project Overview
 
-A hands-on DevOps project demonstrating server automation with Ansible on AWS EC2.
-</div>
+This project demonstrates how to use Ansible to automate the configuration of an Ubuntu web server running on AWS EC2.
 
-📌 Table of Contents
-- Overview
-- Project Goals
-- Architecture
-- Technology Stack
-- Prerequisites
-- Step 1 — Create EC2 Instances
-- Step 2 — Connect to the Master
-- Step 3 — Install Ansible
-- Step 4 — Configure SSH
-- Step 5 — Configure Inventory
-- Step 6 — Test Connectivity
-- Step 7 — Install Nginx
-- Ansible Concepts Practiced
-- Final Deployment Project
-- Troubleshooting
-- Security and Cost Notes
-- Skills Demonstrated
-- Conclusion
-📖 Overview
-This project uses Ansible to automate configuration of an Ubuntu web server hosted on Amazon EC2.
-Ansible runs from a controller machine named ansible-master and connects to a managed machine named ansible-node over SSH. It can install Nginx, deploy a custom webpage, manage services, and verify the HTTP response.
-Repository format: This repository is intentionally documented in a single README.md file. Commands and code samples are shown below; save the relevant code blocks into files on the EC2 controller when you want to execute them.
+Ansible runs on a controller instance called `ansible-master` and connects to a managed instance called `ansible-node` through SSH. It installs Nginx, deploys a custom HTML webpage, manages services, and verifies the deployment.
 
-🎯 Project Goals
-- Provision two Ubuntu EC2 instances for the lab.
-- Install Ansible on the controller node.
-- Configure SSH authentication to the managed node.
-- Learn inventories, ad-hoc commands, and playbooks.
-- Practice variables, loops, conditions, facts, handlers, templates, and roles.
-- Automate packages, files, users, groups, services, and cron jobs.
-- Understand error handling and Ansible Vault.
-- Deploy and verify an Nginx webpage.
-🏗️ Architecture
-                    👤 Administrator
-                           |
-                           v
-                 ┌────────────────────┐
-                 │   Ansible Master   │
-                 │     Ubuntu EC2     │
-                 └────────────────────┘
-                           |
-                     SSH / TCP 22
-                           |
-                           v
-                 ┌────────────────────┐
-                 │    Ansible Node    │
-                 │     Ubuntu EC2     │
-                 └────────────────────┘
-                           |
-                           v
-                 ┌────────────────────┐
-                 │       Nginx        │
-                 │  Custom HTML Page  │
-                 └────────────────────┘
-                           |
-                     HTTP / TCP 80
-                           |
-                           v
-                     Web Browser
-How it works: The master reads the inventory and playbook, connects to the node over SSH, and executes tasks remotely. Nginx serves the deployed webpage.
-🧰 Technology Stack
-Technology	Purpose
-AWS EC2	Host the controller and managed server
-Ubuntu Linux	Operating system
-Ansible	Configuration management and automation
-SSH	Secure remote connection
-YAML	Playbook and configuration syntax
-Jinja2	Dynamic templates
-Nginx	Web server
-Git and GitHub	Version control and project documentation
+All setup instructions and code examples are documented in this README.
 
+## 2. Project Objectives
 
-✅ Prerequisites
+- Create Ubuntu EC2 instances for Ansible automation.
+- Install and configure Ansible on the controller.
+- Configure SSH authentication between the controller and managed node.
+- Manage the target server through an Ansible inventory.
+- Use playbooks, variables, loops, conditions, facts, handlers, templates, and roles.
+- Automate package, file, user, group, service, and cron management.
+- Learn error handling and Ansible Vault.
+- Deploy and verify an Nginx webpage automatically.
+
+## 3. Technologies Used
+
+- Amazon Web Services (AWS)
+- Amazon EC2
+- Ubuntu Linux
+- Ansible
+- SSH
+- YAML
+- Jinja2 templates
+- Nginx
+- Git and GitHub
+
+## 4. Architecture
+
+```text
+                 Administrator
+                       |
+                       v
+                Ansible Master
+                 Ubuntu EC2
+                       |
+                 SSH / TCP 22
+                       |
+                       v
+                 Ansible Node
+                  Ubuntu EC2
+                       |
+                       v
+                     Nginx
+                       |
+                       v
+               Custom HTML Website
+                  HTTP / TCP 80
+```
+
+The master executes Ansible commands and playbooks. The managed node receives tasks over SSH and runs them remotely.
+
+## 5. Prerequisites
+
 - An AWS account.
 - Two Ubuntu EC2 instances.
-- SSH access to the master.
-- An SSH key pair for initial EC2 access.
-- Ansible installed on the master.
-- Basic Linux and YAML knowledge.
-🔐 Security: Keep SSH port 22 restricted to trusted sources. Allow HTTP port 80 publicly only when you want to demonstrate the website. Never commit private keys, .pem files, AWS credentials, or real passwords.
+- SSH access to the controller.
+- An SSH key pair for initial access.
+- Ansible installed on the controller.
+- Basic knowledge of Linux commands and YAML.
 
-Step 1 — Create EC2 Instances
-In the AWS Console, open EC2 → Instances → Launch instances.
-Create these two instances:
-Setting	Ansible Master	Ansible Node
-Name	ansible-master	ansible-node
-AMI	Ubuntu Server	Ubuntu Server
-VPC	Same VPC	Same VPC
-SSH key	Your selected key pair	Your selected key pair
-SSH access	Your IP address	Preferably allow SSH from the master's security group
+**Security:** Keep SSH port 22 restricted to your own IP address where possible. Open HTTP port 80 to the public only when you want the demo website to be publicly accessible. Never upload private keys or AWS credentials.
 
+## 6. Create EC2 Instances
 
-Choose an instance type appropriate for your account and current AWS pricing. Free-tier eligibility depends on account status and the instance type.
-Ensure the master can reach the node on TCP port 22. The node also needs outbound access to Ubuntu package repositories, or another configured package source, to install packages.
-Step 2 — Connect to the Master
-From your local terminal, connect using the master's current public IPv4 address:
+Open AWS Console → EC2 → Instances → Launch instances.
+
+Create these instances:
+
+| Setting | Ansible Master | Ansible Node |
+|---|---|---|
+| Name | ansible-master | ansible-node |
+| Operating system | Ubuntu Server | Ubuntu Server |
+| Instance type | Suitable free-tier-eligible type, if available | Suitable free-tier-eligible type, if available |
+| Network | Same VPC | Same VPC |
+| SSH key | Your selected key pair | Your selected key pair |
+| SSH access | Your IP address | Preferably master access for private SSH |
+
+Use a suitable instance type based on your account's current free-tier eligibility and pricing.
+
+Both instances should be in a network where the master can reach the node over SSH. For this lab, the easiest configuration is to place them in the same VPC and allow SSH from the master's security group to the node.
+
+If you want to install packages from Ubuntu repositories, the node needs outbound internet connectivity or another configured package source.
+
+## 7. Connect to the Ansible Master
+
+From your terminal, connect using the public IPv4 address of the master.
+
+```bash
 ssh -i /path/to/your-key.pem ubuntu@MASTER_PUBLIC_IP
-Replace the placeholders with your local private-key path and the master's actual public IP.
-Do not share or upload the private key.
-Step 3 — Install Ansible
-On the master:
+```
+
+Replace `/path/to/your-key.pem` and `MASTER_PUBLIC_IP` with your actual local key path and master public IP.
+
+Do not paste the contents of your private key into this README or GitHub.
+
+## 8. Install Ansible on the Master
+
+Update the package cache:
+
+```bash
 sudo apt update
+```
+
+Install Ansible:
+
+```bash
 sudo apt install ansible -y
+```
+
+Verify the installation:
+
+```bash
 ansible --version
-Create a workspace:
+```
+
+Create the project directory:
+
+```bash
 mkdir -p ~/ansible-project
 cd ~/ansible-project
-Step 4 — Configure SSH Authentication
-Generate an SSH key on the master if you do not already have one:
+```
+
+## 9. Configure SSH Authentication
+
+Ansible normally uses SSH to connect to Linux managed nodes.
+
+Generate an SSH key on the master:
+
+```bash
 ssh-keygen -t ed25519 -C "ansible-master"
-Accept the default location if appropriate. Do not overwrite an existing key unless you intend to replace it.
+```
+
+Accept the default path for the practice lab. Do not overwrite an existing key unless you intend to replace it.
+
 Display the public key:
+
+```bash
 cat ~/.ssh/id_ed25519.pub
-Add that public key to the managed node's ~/.ssh/authorized_keys using a secure method. If password-based SSH is enabled on the node, you can use:
+```
+
+Copy the public key and add it to the managed node's `~/.ssh/authorized_keys` file using a secure method. Alternatively, if password-based SSH is enabled on the node, you can use `ssh-copy-id`:
+
+```bash
 ssh-copy-id -i ~/.ssh/id_ed25519.pub ubuntu@NODE_PRIVATE_IP
-Test the connection:
+```
+
+Replace `NODE_PRIVATE_IP` with the node's actual private IPv4 address.
+
+Test SSH connectivity:
+
+```bash
 ssh -i ~/.ssh/id_ed25519 ubuntu@NODE_PRIVATE_IP
-After verifying access, return to the master:
+```
+
+Once the connection works, exit the node's shell:
+
+```bash
 exit
-Step 5 — Configure the Ansible Inventory
-The inventory tells Ansible which machines to manage and how to connect to them.
-Open the inventory file:
+```
+
+## 10. Configure the Ansible Inventory
+
+An inventory tells Ansible which managed servers to contact and how to connect to them.
+
+Open the inventory:
+
+```bash
 sudo nano /etc/ansible/hosts
-Add this entry, replacing NODE_PRIVATE_IP with the current private IP of your node:
+```
+
+Add:
+
+```ini
 [web]
 NODE_PRIVATE_IP ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/.ssh/id_ed25519
+```
+
+Replace `NODE_PRIVATE_IP` with the current private IP of `ansible-node`.
+
 Save and exit the editor.
-Step 6 — Test Connectivity and Run Ad-Hoc Commands
-Test the Ansible connection:
+
+Test connectivity:
+
+```bash
 ansible web -m ping
+```
+
 Expected result:
+
+```text
 SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-Try a few ad-hoc commands:
+```
+
+The IP address in the output will be your actual managed node address.
+
+## 11. Run Ad-Hoc Commands
+
+Ansible ad-hoc commands execute one-off tasks without requiring a playbook.
+
+Check uptime:
+
+```bash
 ansible web -m command -a "uptime"
+```
+
+Check the date:
+
+```bash
 ansible web -m command -a "date"
+```
+
+Check memory:
+
+```bash
 ansible web -m command -a "free -h"
+```
+
+Check disk usage:
+
+```bash
 ansible web -m command -a "df -h"
-Check Nginx status with elevated privileges:
+```
+
+Run commands with elevated privileges when required:
+
+```bash
 ansible web -b -m command -a "systemctl is-active nginx"
-Step 7 — Install Nginx with a Playbook
-Create a playbook on the master:
+```
+
+## 12. Install Nginx with Ansible
+
+Create a playbook:
+
+```bash
 nano nginx-playbook.yml
-Add:
+```
+
+Code:
+
+```yaml
 ---
 - name: Install and configure Nginx
   hosts: web
@@ -177,20 +265,35 @@ Add:
         name: nginx
         state: started
         enabled: yes
-Run the playbook:
-ansible-playbook nginx-playbook.yml
-Verify the service and local HTTP response:
-ansible web -b -m command -a "systemctl is-active nginx"
-ansible web -m command -a "curl -I http://127.0.0.1"
-🧠 Ansible Concepts Practiced
-The following examples are documentation snippets. To execute one, save it in a file with the indicated name on the controller and run the corresponding command.
-<details>
-<summary><strong>1. Variables</strong></summary>
+```
 
-Variables allow values to be reused.
-Save as variables.yml:
+Run:
+
+```bash
+ansible-playbook nginx-playbook.yml
+```
+
+Verify the service:
+
+```bash
+ansible web -b -m command -a "systemctl is-active nginx"
+```
+
+Verify the local HTTP response on the node:
+
+```bash
+ansible web -m command -a "curl -I http://127.0.0.1"
+```
+
+## 13. Ansible Variables
+
+Variables allow reusable values to be defined once and referenced throughout a playbook.
+
+Example:
+
+```yaml
 ---
-- name: Demonstrate variables
+- name: Demonstrate Ansible variables
   hosts: web
   become: yes
 
@@ -209,15 +312,23 @@ Save as variables.yml:
         name: "{{ service_name }}"
         state: started
         enabled: yes
+```
+
 Run:
+
+```bash
 ansible-playbook variables.yml
-</details>
+```
 
-<details>
-<summary><strong>2. Loops</strong></summary>
+Save the example as `variables.yml` on the controller if you want to execute it.
 
-Loops apply a task to multiple items.
-Save as loops.yml:
+## 14. Ansible Loops
+
+Loops allow the same task to process multiple items.
+
+Example:
+
+```yaml
 ---
 - name: Install multiple packages
   hosts: web
@@ -236,15 +347,21 @@ Save as loops.yml:
         state: present
         update_cache: yes
       loop: "{{ packages }}"
+```
+
 Run:
+
+```bash
 ansible-playbook loops.yml
-</details>
+```
 
-<details>
-<summary><strong>3. Conditions</strong></summary>
+## 15. Ansible Conditions
 
-The when keyword runs a task only when its condition is true.
-Save as conditions.yml:
+The `when` keyword executes a task only when a condition is true.
+
+Example:
+
+```yaml
 ---
 - name: Demonstrate conditions
   hosts: web
@@ -257,15 +374,21 @@ Save as conditions.yml:
         name: nginx
         state: present
       when: ansible_distribution == "Ubuntu"
+```
+
 Run:
+
+```bash
 ansible-playbook conditions.yml
-</details>
+```
 
-<details>
-<summary><strong>4. Facts</strong></summary>
+## 16. Ansible Facts
 
-Facts provide system information such as hostname, operating system, IP address, and memory.
-Save as facts.yml:
+Facts are system details collected automatically from managed nodes.
+
+Example:
+
+```yaml
 ---
 - name: Display server facts
   hosts: web
@@ -287,15 +410,21 @@ Save as facts.yml:
     - name: Display memory
       debug:
         msg: "Memory: {{ ansible_memtotal_mb }} MB"
+```
+
 Run:
+
+```bash
 ansible-playbook facts.yml
-</details>
+```
 
-<details>
-<summary><strong>5. Handlers</strong></summary>
+## 17. Ansible Handlers
 
-A handler runs when notified by a task that reports a change.
-Save as handlers.yml:
+Handlers run when notified by a task that reports a change.
+
+Example:
+
+```yaml
 ---
 - name: Demonstrate handlers
   hosts: web
@@ -313,15 +442,23 @@ Save as handlers.yml:
       service:
         name: nginx
         state: reloaded
+```
+
 Run:
+
+```bash
 ansible-playbook handlers.yml
-</details>
+```
 
-<details>
-<summary><strong>6. Jinja2 Templates</strong></summary>
+The handler runs only when the copy task changes the file.
 
-Templates insert variables and gathered facts into files.
-Example template:
+## 18. Ansible Templates
+
+Jinja2 templates allow variables and gathered facts to be inserted into files.
+
+Example template content:
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -334,29 +471,41 @@ Example template:
     <p>Operating System: {{ ansible_distribution }}</p>
 </body>
 </html>
-The Ansible template module renders the Jinja2 expressions and places the result on the managed node.
-</details>
+```
 
-<details>
-<summary><strong>7. Roles</strong></summary>
+The template module processes the expressions and writes the rendered file to the managed node.
 
-Roles organize reusable tasks, variables, handlers, templates, and files.
+## 19. Ansible Roles
+
+Roles organize tasks, variables, handlers, templates, and other files into a reusable directory structure.
+
 Create a role:
+
+```bash
 cd ~/ansible-project
 ansible-galaxy role init nginx-role
-Example nginx-role/tasks/main.yml:
+```
+
+Example task file for `nginx-role/tasks/main.yml`:
+
+```yaml
 ---
 - name: Install Nginx
   apt:
     name: nginx
     state: present
+    update_cache: yes
 
 - name: Ensure Nginx is running
   service:
     name: nginx
     state: started
     enabled: yes
+```
+
 Example playbook:
+
+```yaml
 ---
 - name: Run Nginx role
   hosts: web
@@ -364,13 +513,15 @@ Example playbook:
 
   roles:
     - nginx-role
-Run the playbook from a directory where Ansible can locate the role, or configure the role search path.
-</details>
+```
 
-<details>
-<summary><strong>8. File Management</strong></summary>
+For execution, save these examples in their respective files on the master and configure the role search path correctly.
+
+## 20. Ansible File Management
 
 Example:
+
+```yaml
 ---
 - name: Manage files
   hosts: web
@@ -388,12 +539,19 @@ Example:
         content: "Created using Ansible\n"
         dest: /opt/ansible-demo/info.txt
         mode: '0644'
-</details>
+```
 
-<details>
-<summary><strong>9. Users and Groups</strong></summary>
+Run:
+
+```bash
+ansible-playbook file-management.yml
+```
+
+## 21. Ansible Users and Groups
 
 Example:
+
+```yaml
 ---
 - name: Manage Linux users and groups
   hosts: web
@@ -412,12 +570,19 @@ Example:
         shell: /bin/bash
         create_home: yes
         state: present
-</details>
+```
 
-<details>
-<summary><strong>10. Package Management</strong></summary>
+Run:
+
+```bash
+ansible-playbook users-groups.yml
+```
+
+## 22. Ansible Package Management
 
 Example:
+
+```yaml
 ---
 - name: Manage packages
   hosts: web
@@ -437,12 +602,19 @@ Example:
           - unzip
           - tree
         state: present
-</details>
+```
 
-<details>
-<summary><strong>11. Cron Jobs</strong></summary>
+Run:
 
-Example: write the date to a log file every minute.
+```bash
+ansible-playbook package-management.yml
+```
+
+## 23. Ansible Cron Jobs
+
+Example:
+
+```yaml
 ---
 - name: Configure cron
   hosts: web
@@ -455,12 +627,19 @@ Example: write the date to a log file every minute.
         minute: "*"
         job: "/usr/bin/date >> /var/log/ansible-cron.log"
         state: present
-</details>
+```
 
-<details>
-<summary><strong>12. Service Management</strong></summary>
+Run:
+
+```bash
+ansible-playbook cron-job.yml
+```
+
+## 24. Ansible Service Management
 
 Example:
+
+```yaml
 ---
 - name: Manage Nginx
   hosts: web
@@ -477,29 +656,45 @@ Example:
       service:
         name: nginx
         state: restarted
-</details>
+```
 
-<details>
-<summary><strong>13. Copy and Fetch Files</strong></summary>
+Run:
 
-Copy from controller to node:
+```bash
+ansible-playbook service-management.yml
+```
+
+## 25. Copy and Fetch Files
+
+Copy a file from the controller to the managed node:
+
+```yaml
 - name: Copy file to node
   copy:
     src: sample.txt
     dest: /tmp/sample.txt
     mode: '0644'
-Fetch from node to controller:
+```
+
+Fetch a file from the managed node to the controller:
+
+```yaml
 - name: Fetch file from node
   fetch:
     src: /tmp/sample.txt
     dest: ./fetched-files/
     flat: yes
-</details>
+```
 
-<details>
-<summary><strong>14. Error Handling</strong></summary>
+Run the tasks using an appropriate playbook.
 
-Use block, rescue, and always to handle task failures.
+## 26. Error Handling
+
+Use `block`, `rescue`, and `always` to manage task failures.
+
+Example:
+
+```yaml
 ---
 - name: Demonstrate error handling
   hosts: web
@@ -522,40 +717,61 @@ Use block, rescue, and always to handle task failures.
         - name: Always execute
           debug:
             msg: "The always section has executed."
-</details>
+```
 
-<details>
-<summary><strong>15. Ansible Vault</strong></summary>
+Run:
 
-Ansible Vault encrypts files containing sensitive data.
-Example practice file:
+```bash
+ansible-playbook error-handling.yml
+```
+
+## 27. Ansible Vault
+
+Ansible Vault encrypts sensitive files.
+
+Create a practice variables file:
+
+```yaml
 ---
 db_username: admin
 db_password: DemoPass123!
-Save as secrets.yml and encrypt it:
+```
+
+Save this example as `secrets.yml` on the controller, then encrypt it:
+
+```bash
 ansible-vault encrypt secrets.yml
-View or edit the encrypted file:
+```
+
+View the contents:
+
+```bash
 ansible-vault view secrets.yml
+```
+
+Edit the encrypted file:
+
+```bash
 ansible-vault edit secrets.yml
-The example password is for practice only. Never store real secrets in a public README or repository.
-</details>
+```
 
-🚀 Final Deployment Project
-This final playbook installs Nginx, deploys a dynamic webpage using a Jinja2 template, ensures Nginx is running, and verifies the HTTP response.
-1. Project files on the controller
-Create these files on the master for execution:
-final-project/
-├── site.yml
-├── vars.yml
-└── templates/
-    └── index.html.j2
-The files above are used on the EC2 controller. This GitHub repository itself remains README-only, as intended.
+Never put real passwords, AWS credentials, or private keys in this README.
 
-2. Variables — vars.yml
+## 28. Final Project: Automated Nginx Deployment
+
+The following is the final deployment playbook. It installs Nginx, deploys a dynamic webpage, ensures the service is running, and checks the HTTP response.
+
+### Variables
+
+```yaml
 ---
 website_title: "My AWS Ansible Project"
 website_message: "Deployed automatically using Ansible"
-3. Template — templates/index.html.j2
+```
+
+### Jinja2 template
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -568,7 +784,11 @@ website_message: "Deployed automatically using Ansible"
     <p>Operating System: {{ ansible_distribution }}</p>
 </body>
 </html>
-4. Playbook — site.yml
+```
+
+### Main playbook
+
+```yaml
 ---
 - name: Deploy a web server on AWS EC2
   hosts: web
@@ -616,66 +836,114 @@ website_message: "Deployed automatically using Ansible"
       service:
         name: nginx
         state: reloaded
-5. Execute the deployment
+```
+
+### Final project directory on the controller
+
+For execution, create these files on the master:
+
+```text
+final-project/
+├── site.yml
+├── vars.yml
+└── templates/
+    └── index.html.j2
+```
+
+Save each corresponding code block in its named file. The directory structure above is for the EC2 execution environment; this GitHub repository documents the code in README.md only.
+
+### Execute the final playbook
+
+```bash
 cd ~/ansible-project/final-project
 ansible-playbook -i /etc/ansible/hosts site.yml
-Expected result: the playbook completes without failures and the HTTP check returns status 200.
-6. Verify the webpage
-Check the page from the master through the managed node:
+```
+
+### Verify the website
+
+Check the HTTP response from the node:
+
+```bash
 ansible web -m command -a "curl -s http://127.0.0.1"
-To view it externally, open the node's current public IPv4 address in a browser:
+```
+
+To access the website externally, open the current public IPv4 address of the node in a browser:
+
+```text
 http://NODE_PUBLIC_IP
-The node's security group must allow inbound HTTP on port 80 for public access.
-🛠️ Troubleshooting
-<details>
-<summary><strong>Ansible cannot connect to the node</strong></summary>
+```
+
+Ensure Nginx is running and the node's security group allows inbound HTTP on port 80.
+
+## 29. Troubleshooting
+
+### Ansible cannot connect to the node
 
 Check the inventory:
-cat /etc/ansible/hosts
-Test connectivity:
-ansible web -m ping
-Confirm the private IP, SSH username, private-key path, and security-group rules. The managed node must allow SSH from the master.
-</details>
 
-<details>
-<summary><strong>APT cache update fails</strong></summary>
+```bash
+cat /etc/ansible/hosts
+```
+
+Test connectivity:
+
+```bash
+ansible web -m ping
+```
+
+Confirm that the private IP is current, the SSH username is correct, the key path is correct, and the node's security group allows SSH from the master.
+
+### APT cache update fails
 
 Test outbound connectivity:
+
+```bash
 ansible web -m command -a "curl -I --connect-timeout 10 https://archive.ubuntu.com"
-If the request times out, check outbound security-group rules, subnet routes, internet gateway or NAT configuration, network ACLs, and the operating system firewall.
-</details>
+```
 
-<details>
-<summary><strong>The webpage does not open</strong></summary>
+If the request times out, check the node's outbound security group rules, subnet route table, internet gateway or NAT configuration, network ACL, and operating system firewall.
 
-Check Nginx:
+### The webpage is not accessible
+
+Check the service:
+
+```bash
 ansible web -b -m command -a "systemctl is-active nginx"
-Check the local HTTP response:
-ansible web -m command -a "curl -I http://127.0.0.1"
-Verify the node's current public IP and inbound HTTP security-group rule.
-</details>
+```
 
-🔐 Security and Cost Management
-- Never upload private SSH keys, .pem files, AWS credentials, or real passwords.
-- Restrict SSH access to trusted sources.
-- Expose HTTP publicly only when needed for the demonstration.
-- Stop EC2 instances when you are not using the lab.
-- Stopping instances generally ends compute charges, but EBS storage and other resources may still incur charges.
-- Review AWS billing and clean up unused resources.
-💼 Skills Demonstrated
-- AWS EC2 and Ubuntu administration
-- SSH authentication and Ansible inventory
-- Ansible ad-hoc commands and playbooks
+Check the HTTP response:
+
+```bash
+ansible web -m command -a "curl -I http://127.0.0.1"
+```
+
+Then verify the current public IP and inbound HTTP security group rule.
+
+## 30. Security and Cost Management
+
+- Do not upload private SSH keys, `.pem` files, AWS credentials, or real passwords.
+- Keep SSH access restricted to trusted sources.
+- Expose HTTP only when needed for the demo.
+- Stop EC2 instances when the lab is not in use.
+- Stopping instances generally ends compute charges, but EBS storage and other resources can still incur charges.
+- Review AWS billing and clean up resources you no longer need.
+- Keep the repository free of sensitive information.
+
+## 31. Skills Demonstrated
+
+- AWS EC2 and Linux administration
+- SSH authentication
+- Ansible inventory and ad-hoc commands
+- YAML playbooks
 - Variables, loops, conditions, and facts
 - Handlers, templates, and roles
-- Package, file, user, group, and service management
-- Cron jobs, file transfer, and error handling
+- Package and service management
+- File and user management
+- Cron jobs and error handling
 - Ansible Vault
-- Nginx deployment and HTTP verification
+- Automated Nginx deployment
 - Git and GitHub documentation
-🎓 Conclusion
-This project demonstrates how Ansible automates repetitive server configuration tasks on AWS EC2. The final deployment combines package installation, Jinja2 templates, service management, and HTTP verification into a practical web-server automation workflow.
-<div align="center">
 
-Built while learning AWS, Linux, Ansible, and DevOps automation.
-</div>
+## 32. Conclusion
+
+This project demonstrates how Ansible can automate repetitive server configuration tasks on AWS EC2. The final deployment provides a practical example of installing Nginx, deploying a dynamic webpage, and verifying the result through an Ansible playbook.
