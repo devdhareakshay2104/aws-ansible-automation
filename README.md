@@ -616,17 +616,20 @@ The example password is for practice only. Never store real secrets in a public 
 </details>
 
 🚀 Final Deployment Project
+
 This final playbook installs Nginx, deploys a dynamic webpage using a Jinja2 template, ensures Nginx is running, and verifies the HTTP response.
 1. Project files on the controller
 Create these files on the master for execution:
+
 final-project/
 ├── site.yml
 ├── vars.yml
 └── templates/
     └── index.html.j2
+   
 The files above are used on the EC2 controller. This GitHub repository itself remains README-only, as intended.
 
-2. Variables — vars.yml
+3. Variables — vars.yml
 ---
 website_title: "My AWS Ansible Project"
 website_message: "Deployed automatically using Ansible"
@@ -701,7 +704,10 @@ ansible web -m command -a "curl -s http://127.0.0.1"
 To view it externally, open the node's current public IPv4 address in a browser:
 http://NODE_PUBLIC_IP
 The node's security group must allow inbound HTTP on port 80 for public access.
+
+
 🛠️ Troubleshooting
+
 <details>
 <summary><strong>Ansible cannot connect to the node</strong></summary>
 
@@ -731,13 +737,16 @@ Verify the node's current public IP and inbound HTTP security-group rule.
 </details>
 
 🔐 Security and Cost Management
+
 - Never upload private SSH keys, .pem files, AWS credentials, or real passwords.
 - Restrict SSH access to trusted sources.
 - Expose HTTP publicly only when needed for the demonstration.
 - Stop EC2 instances when you are not using the lab.
 - Stopping instances generally ends compute charges, but EBS storage and other resources may still incur charges.
 - Review AWS billing and clean up unused resources.
+- 
 💼 Skills Demonstrated
+
 - AWS EC2 and Ubuntu administration
 - SSH authentication and Ansible inventory
 - Ansible ad-hoc commands and playbooks
@@ -748,5 +757,7 @@ Verify the node's current public IP and inbound HTTP security-group rule.
 - Ansible Vault
 - Nginx deployment and HTTP verification
 - Git and GitHub documentation
+
 🎓 Conclusion
+
 This project demonstrates how Ansible automates repetitive server configuration tasks on AWS EC2. The final deployment combines package installation, Jinja2 templates, service management, and HTTP verification into a practical web-server automation workflow.
