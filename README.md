@@ -32,15 +32,12 @@ A hands-on DevOps project demonstrating server automation with Ansible on AWS EC
 - Security and Cost Notes
 - Skills Demonstrated
 - Conclusion
- 
 📖 Overview
-
 This project uses Ansible to automate configuration of an Ubuntu web server hosted on Amazon EC2.
 Ansible runs from a controller machine named ansible-master and connects to a managed machine named ansible-node over SSH. It can install Nginx, deploy a custom webpage, manage services, and verify the HTTP response.
 Repository format: This repository is intentionally documented in a single README.md file. Commands and code samples are shown below; save the relevant code blocks into files on the EC2 controller when you want to execute them.
 
 🎯 Project Goals
-
 - Provision two Ubuntu EC2 instances for the lab.
 - Install Ansible on the controller node.
 - Configure SSH authentication to the managed node.
@@ -49,9 +46,7 @@ Repository format: This repository is intentionally documented in a single READM
 - Automate packages, files, users, groups, services, and cron jobs.
 - Understand error handling and Ansible Vault.
 - Deploy and verify an Nginx webpage.
-
 🏗️ Architecture
-
                     👤 Administrator
                            |
                            v
@@ -78,13 +73,8 @@ Repository format: This repository is intentionally documented in a single READM
                            |
                            v
                      Web Browser
-  
-How it works: 
-
-The master reads the inventory and playbook, connects to the node over SSH, and executes tasks remotely. Nginx serves the deployed webpage.
-
+How it works: The master reads the inventory and playbook, connects to the node over SSH, and executes tasks remotely. Nginx serves the deployed webpage.
 🧰 Technology Stack
-
 Technology	Purpose
 AWS EC2	Host the controller and managed server
 Ubuntu Linux	Operating system
@@ -97,22 +87,15 @@ Git and GitHub	Version control and project documentation
 
 
 ✅ Prerequisites
-
 - An AWS account.
 - Two Ubuntu EC2 instances.
 - SSH access to the master.
 - An SSH key pair for initial EC2 access.
 - Ansible installed on the master.
 - Basic Linux and YAML knowledge.
+🔐 Security: Keep SSH port 22 restricted to trusted sources. Allow HTTP port 80 publicly only when you want to demonstrate the website. Never commit private keys, .pem files, AWS credentials, or real passwords.
 
-
-🔐 Security: 
-
-Keep SSH port 22 restricted to trusted sources. Allow HTTP port 80 publicly only when you want to demonstrate the website. Never commit private keys, .pem files, AWS credentials, or real passwords.
-
-
-Step 1 — Create EC2 Instances:
-
+Step 1 — Create EC2 Instances
 In the AWS Console, open EC2 → Instances → Launch instances.
 Create these two instances:
 Setting	Ansible Master	Ansible Node
@@ -125,101 +108,58 @@ SSH access	Your IP address	Preferably allow SSH from the master's security group
 
 Choose an instance type appropriate for your account and current AWS pricing. Free-tier eligibility depends on account status and the instance type.
 Ensure the master can reach the node on TCP port 22. The node also needs outbound access to Ubuntu package repositories, or another configured package source, to install packages.
-
-
-Step 2 — Connect to the Master:
-
+Step 2 — Connect to the Master
 From your local terminal, connect using the master's current public IPv4 address:
 ssh -i /path/to/your-key.pem ubuntu@MASTER_PUBLIC_IP
 Replace the placeholders with your local private-key path and the master's actual public IP.
 Do not share or upload the private key.
-
-
-Step 3 — Install Ansible On the master:
-
+Step 3 — Install Ansible
+On the master:
 sudo apt update
 sudo apt install ansible -y
 ansible --version
-
 Create a workspace:
-
 mkdir -p ~/ansible-project
 cd ~/ansible-project
-
-
-Step 4 — Configure SSH Authentication:
-
+Step 4 — Configure SSH Authentication
 Generate an SSH key on the master if you do not already have one:
-
 ssh-keygen -t ed25519 -C "ansible-master"
-
 Accept the default location if appropriate. Do not overwrite an existing key unless you intend to replace it.
 Display the public key:
-
 cat ~/.ssh/id_ed25519.pub
-
 Add that public key to the managed node's ~/.ssh/authorized_keys using a secure method. If password-based SSH is enabled on the node, you can use:
-
 ssh-copy-id -i ~/.ssh/id_ed25519.pub ubuntu@NODE_PRIVATE_IP
-
 Test the connection:
-
 ssh -i ~/.ssh/id_ed25519 ubuntu@NODE_PRIVATE_IP
-
 After verifying access, return to the master:
-
 exit
-
-
-Step 5 — Configure the Ansible Inventory:
-
+Step 5 — Configure the Ansible Inventory
 The inventory tells Ansible which machines to manage and how to connect to them.
 Open the inventory file:
-
 sudo nano /etc/ansible/hosts
 Add this entry, replacing NODE_PRIVATE_IP with the current private IP of your node:
-
 [web]
 NODE_PRIVATE_IP ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/.ssh/id_ed25519
-
 Save and exit the editor.
-
-
-Step 6 — Test Connectivity and Run Ad-Hoc Commands:
-
+Step 6 — Test Connectivity and Run Ad-Hoc Commands
 Test the Ansible connection:
-
 ansible web -m ping
-
 Expected result:
-
 SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-
 Try a few ad-hoc commands:
-
 ansible web -m command -a "uptime"
-
 ansible web -m command -a "date"
-
 ansible web -m command -a "free -h"
-
 ansible web -m command -a "df -h"
-
 Check Nginx status with elevated privileges:
-
-
-Step 7 — Install Nginx with a Playbook:
-
-
+ansible web -b -m command -a "systemctl is-active nginx"
+Step 7 — Install Nginx with a Playbook
 Create a playbook on the master:
-
 nano nginx-playbook.yml
-
 Add:
-
 ---
 - name: Install and configure Nginx
   hosts: web
@@ -237,29 +177,18 @@ Add:
         name: nginx
         state: started
         enabled: yes
-      
 Run the playbook:
-
 ansible-playbook nginx-playbook.yml
-
 Verify the service and local HTTP response:
-
 ansible web -b -m command -a "systemctl is-active nginx"
 ansible web -m command -a "curl -I http://127.0.0.1"
-ansible web -b -m command -a "systemctl is-active nginx"
-
-
-🧠 Ansible Concepts Practiced:
-
+🧠 Ansible Concepts Practiced
 The following examples are documentation snippets. To execute one, save it in a file with the indicated name on the controller and run the corresponding command.
-
 <details>
 <summary><strong>1. Variables</strong></summary>
 
 Variables allow values to be reused.
-
 Save as variables.yml:
-
 ---
 - name: Demonstrate variables
   hosts: web
@@ -280,12 +209,8 @@ Save as variables.yml:
         name: "{{ service_name }}"
         state: started
         enabled: yes
-
-      
 Run:
-
 ansible-playbook variables.yml
-
 </details>
 
 <details>
@@ -616,20 +541,17 @@ The example password is for practice only. Never store real secrets in a public 
 </details>
 
 🚀 Final Deployment Project
-
 This final playbook installs Nginx, deploys a dynamic webpage using a Jinja2 template, ensures Nginx is running, and verifies the HTTP response.
 1. Project files on the controller
 Create these files on the master for execution:
-
 final-project/
 ├── site.yml
 ├── vars.yml
 └── templates/
     └── index.html.j2
-   
 The files above are used on the EC2 controller. This GitHub repository itself remains README-only, as intended.
 
-3. Variables — vars.yml
+2. Variables — vars.yml
 ---
 website_title: "My AWS Ansible Project"
 website_message: "Deployed automatically using Ansible"
@@ -704,10 +626,7 @@ ansible web -m command -a "curl -s http://127.0.0.1"
 To view it externally, open the node's current public IPv4 address in a browser:
 http://NODE_PUBLIC_IP
 The node's security group must allow inbound HTTP on port 80 for public access.
-
-
 🛠️ Troubleshooting
-
 <details>
 <summary><strong>Ansible cannot connect to the node</strong></summary>
 
@@ -737,16 +656,13 @@ Verify the node's current public IP and inbound HTTP security-group rule.
 </details>
 
 🔐 Security and Cost Management
-
 - Never upload private SSH keys, .pem files, AWS credentials, or real passwords.
 - Restrict SSH access to trusted sources.
 - Expose HTTP publicly only when needed for the demonstration.
 - Stop EC2 instances when you are not using the lab.
 - Stopping instances generally ends compute charges, but EBS storage and other resources may still incur charges.
 - Review AWS billing and clean up unused resources.
-- 
 💼 Skills Demonstrated
-
 - AWS EC2 and Ubuntu administration
 - SSH authentication and Ansible inventory
 - Ansible ad-hoc commands and playbooks
@@ -757,7 +673,9 @@ Verify the node's current public IP and inbound HTTP security-group rule.
 - Ansible Vault
 - Nginx deployment and HTTP verification
 - Git and GitHub documentation
-
 🎓 Conclusion
-
 This project demonstrates how Ansible automates repetitive server configuration tasks on AWS EC2. The final deployment combines package installation, Jinja2 templates, service management, and HTTP verification into a practical web-server automation workflow.
+<div align="center">
+
+Built while learning AWS, Linux, Ansible, and DevOps automation.
+</div>
