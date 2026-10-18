@@ -1,6 +1,6 @@
 # AWS Ansible Automation — EC2 Web Server Deployment
 
-## 1. Project Overview
+## 1. Project Overview :
 
 This project demonstrates how to use Ansible to automate the configuration of an Ubuntu web server running on AWS EC2.
 
@@ -8,7 +8,7 @@ Ansible runs on a controller instance called `ansible-master` and connects to a 
 
 All setup instructions and code examples are documented in this README.
 
-## 2. Project Objectives
+## 2. Project Objectives :
 
 - Create Ubuntu EC2 instances for Ansible automation.
 - Install and configure Ansible on the controller.
