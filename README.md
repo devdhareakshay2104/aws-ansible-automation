@@ -31,7 +31,7 @@ All setup instructions and code examples are documented in this README.
 - Nginx
 - Git and GitHub
 
-## 4. Architecture
+## 4. Architecture :
 
 ```text
                  Administrator
