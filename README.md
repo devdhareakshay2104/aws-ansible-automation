@@ -19,7 +19,7 @@ All setup instructions and code examples are documented in this README.
 - Learn error handling and Ansible Vault.
 - Deploy and verify an Nginx webpage automatically.
 
-## 3. Technologies Used
+## 3. Technologies Used :
 
 - Amazon Web Services (AWS)
 - Amazon EC2
