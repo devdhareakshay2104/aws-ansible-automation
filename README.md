@@ -56,7 +56,7 @@ All setup instructions and code examples are documented in this README.
 
 The master executes Ansible commands and playbooks. The managed node receives tasks over SSH and runs them remotely.
 
-## 5. Prerequisites
+## 5. Prerequisites :
 
 - An AWS account.
 - Two Ubuntu EC2 instances.
