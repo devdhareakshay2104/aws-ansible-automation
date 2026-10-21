@@ -65,7 +65,9 @@ The master executes Ansible commands and playbooks. The managed node receives ta
 - Ansible installed on the controller.
 - Basic knowledge of Linux commands and YAML.
 
-**Security:** Keep SSH port 22 restricted to your own IP address where possible. Open HTTP port 80 to the public only when you want the demo website to be publicly accessible. Never upload private keys or AWS credentials.
+**Security:**
+
+Keep SSH port 22 restricted to your own IP address where possible. Open HTTP port 80 to the public only when you want the demo website to be publicly accessible. Never upload private keys or AWS credentials.
 
 ## 6. Create EC2 Instances :
 
