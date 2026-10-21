@@ -71,7 +71,7 @@ The master executes Ansible commands and playbooks. The managed node receives ta
 
 Open AWS Console → EC2 → Instances → Launch instances.
 
-Create these instances:
+Create these instances :
 
 | Setting | Ansible Master | Ansible Node |
 |---|---|---|
