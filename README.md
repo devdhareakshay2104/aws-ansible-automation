@@ -102,7 +102,7 @@ Replace `/path/to/your-key.pem` and `MASTER_PUBLIC_IP` with your actual local ke
 
 Do not paste the contents of your private key into this README or GitHub.
 
-## 8. Install Ansible on the Master
+## 8. Install Ansible on the Master :
 
 Update the package cache:
 
