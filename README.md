@@ -90,7 +90,7 @@ Both instances should be in a network where the master can reach the node over S
 
 If you want to install packages from Ubuntu repositories, the node needs outbound internet connectivity or another configured package source.
 
-## 7. Connect to the Ansible Master
+## 7. Connect to the Ansible Master :
 
 From your terminal, connect using the public IPv4 address of the master.
 
