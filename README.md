@@ -122,14 +122,14 @@ Verify the installation:
 ansible --version
 ```
 
-Create the project directory:
+Create the project directory :
 
 ```bash
 mkdir -p ~/ansible-project
 cd ~/ansible-project
 ```
 
-## 9. Configure SSH Authentication
+## 9. Configure SSH Authentication :
 
 Ansible normally uses SSH to connect to Linux managed nodes.
 
