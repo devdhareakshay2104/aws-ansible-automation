@@ -110,7 +110,7 @@ Update the package cache:
 sudo apt update
 ```
 
-Install Ansible:
+Install Ansible :
 
 ```bash
 sudo apt install ansible -y
