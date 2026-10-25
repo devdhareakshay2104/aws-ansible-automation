@@ -116,7 +116,7 @@ Install Ansible:
 sudo apt install ansible -y
 ```
 
-Verify the installation:
+Verify the installation :
 
 ```bash
 ansible --version
@@ -133,7 +133,7 @@ cd ~/ansible-project
 
 Ansible normally uses SSH to connect to Linux managed nodes.
 
-Generate an SSH key on the master:
+Generate an SSH key on the master :
 
 ```bash
 ssh-keygen -t ed25519 -C "ansible-master"
