@@ -141,7 +141,7 @@ ssh-keygen -t ed25519 -C "ansible-master"
 
 Accept the default path for the practice lab. Do not overwrite an existing key unless you intend to replace it.
 
-Display the public key:
+Display the public key :
 
 ```bash
 cat ~/.ssh/id_ed25519.pub
@@ -155,7 +155,7 @@ ssh-copy-id -i ~/.ssh/id_ed25519.pub ubuntu@NODE_PRIVATE_IP
 
 Replace `NODE_PRIVATE_IP` with the node's actual private IPv4 address.
 
-Test SSH connectivity:
+Test SSH connectivity :
 
 ```bash
 ssh -i ~/.ssh/id_ed25519 ubuntu@NODE_PRIVATE_IP
