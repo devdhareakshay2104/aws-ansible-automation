@@ -161,13 +161,13 @@ Test SSH connectivity :
 ssh -i ~/.ssh/id_ed25519 ubuntu@NODE_PRIVATE_IP
 ```
 
-Once the connection works, exit the node's shell:
+Once the connection works, exit the node's shell :
 
 ```bash
 exit
 ```
 
-## 10. Configure the Ansible Inventory
+## 10. Configure the Ansible Inventory :
 
 An inventory tells Ansible which managed servers to contact and how to connect to them.
 
