@@ -104,7 +104,7 @@ Do not paste the contents of your private key into this README or GitHub.
 
 ## 8. Install Ansible on the Master :
 
-Update the package cache:
+Update the package cache :
 
 ```bash
 sudo apt update
