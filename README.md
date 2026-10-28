@@ -205,7 +205,7 @@ SUCCESS => {
 
 The IP address in the output will be your actual managed node address.
 
-## 11. Run Ad-Hoc Commands
+## 11. Run Ad-Hoc Commands :
 
 Ansible ad-hoc commands execute one-off tasks without requiring a playbook.
 
