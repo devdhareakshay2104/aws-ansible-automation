@@ -171,7 +171,7 @@ exit
 
 An inventory tells Ansible which managed servers to contact and how to connect to them.
 
-Open the inventory:
+Open the inventory :
 
 ```bash
 sudo nano /etc/ansible/hosts
@@ -188,13 +188,13 @@ Replace `NODE_PRIVATE_IP` with the current private IP of `ansible-node`.
 
 Save and exit the editor.
 
-Test connectivity:
+Test connectivity :
 
 ```bash
 ansible web -m ping
 ```
 
-Expected result:
+Expected result :
 
 ```text
 SUCCESS => {
