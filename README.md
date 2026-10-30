@@ -239,7 +239,7 @@ Run commands with elevated privileges when required:
 ansible web -b -m command -a "systemctl is-active nginx"
 ```
 
-## 12. Install Nginx with Ansible
+## 12. Install Nginx with Ansible :
 
 Create a playbook:
 
